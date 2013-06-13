@@ -9,16 +9,19 @@ import ddf.minim.analysis.*;
 import ddf.minim.ugens.*;
 import ddf.minim.effects.*;
 
-// Constants
+// All these you can change!
+// If you want to change the screen size, modify these,
+// but keep width > height so my buggy scaling code works :P
 int CANVAS_WIDTH = 800;
 int CANVAS_HEIGHT = 600;
-// Assumed in the code to always be >1, meaning that width > height.
-float ASPECT_RATIO = (float)CANVAS_WIDTH/CANVAS_HEIGHT;
 
 // You can skip backwards/forwards in you demo by using the 
 // arrow keys; this controls how many milliseconds you skip
-// at one press.
+// at one push.
 int SONG_SKIP_MILLISECONDS = 2000;
+
+// Don't change
+float ASPECT_RATIO = (float)CANVAS_WIDTH/CANVAS_HEIGHT;
 
 // Audio
 Minim minim;
@@ -43,7 +46,7 @@ void setup() {
   // respectively for accelerated 2D/3D graphics).
   size(CANVAS_WIDTH, CANVAS_HEIGHT, P2D);
   
-  // Drawing options
+  // Drawing options that don't change, modify as you wish
   noStroke();
   frameRate(30);
   fill(255);
@@ -56,8 +59,9 @@ void setup() {
  * Your drawing code ends up in here!
  */
 void drawDemo(int time) {
+  rect(-1, -0.8, 2, 1.6);
   // "drum intensity" value, 0->1
-  float drum = 0;
+  /*float drum = 0;
   for (int i = 0; i < exampleSync.length; i++) {
     if (time > exampleSync[i] && time < exampleSync[i] + 200)
       drum = (time-exampleSync[i])/200.;
@@ -71,27 +75,60 @@ void drawDemo(int time) {
     
     rect(0, 0, 1+drum*0.2, 1+drum*0.2);
     popMatrix();
+  }*/
+  if (time < 2550) {
+    //ellipse(0, 0, 0.1);
   }
+}
+
+/*
+ * Draws coordinate axes in the drawing space.
+ */
+void drawAxes() {
+  // Drawing options
+  stroke(255);
+  strokeWeight(0.003);
+  fill(255);
+  
+  // X-axis
+  line(-ASPECT_RATIO, 0, ASPECT_RATIO, 0); 
+  pushMatrix();
+  resetMatrix();
+  text(Float.toString(-ASPECT_RATIO), -CANVAS_WIDTH/2, 12);
+  text(Float.toString(ASPECT_RATIO), CANVAS_WIDTH/2-40, 12);
+  popMatrix();
+  // Y-axis
+  line(0, -1, 0, 1);
+  pushMatrix();
+  resetMatrix();
+  text("1", 12, -CANVAS_HEIGHT/2+12);
+  text("-1", 12, CANVAS_HEIGHT/2);
+  popMatrix();
 }
 
 void draw() {
   resetMatrix();
-  // The following line maps coordinates from our drawing space to processing
-  // screen space. By default, axes go from -width...width 
-  // and -height...height, origo being in the center. 
-  // That's not very nice if you wan't to change resolution :)
+  // The following line maps coordinates from our drawing space to 
+  // processing screen space. By default, axes go from -width/2...width/2 
+  // and -height/2...height/2. That's not very nice if you wan't to change 
+  // resolution :)
   // 
-  // The coordinate space you draw in goes from -aspect_ratio...aspect_ratio
-  // on x-axis and always -1...1 on y-axis.
-  scale(1/ASPECT_RATIO*(CANVAS_WIDTH/2.0), CANVAS_HEIGHT/2.0);
+  // The coordinate space we draw in goes from -aspect_ratio...aspect_ratio
+  // on x-axis and always -1...1 on y-axis, NEGATIVE Y ON BOTTOM. So
+  // just like the coordinate system used normally.
+  scale(1/ASPECT_RATIO*(CANVAS_WIDTH/2.0), -CANVAS_HEIGHT/2.0);
   // Clear the screen after previous frame.
+  // If you remove this, you always draw on the last frame,
+  // which can lead to something interesting.
   clear();
   
   // The following lines draw a full-screen quad.
   // rectMode(CORNER); 
+  // Params for rect: x, y, width, height
   // rect(-ASPECT_RATIO, -1, 2*ASPECT_RATIO, 2);
   
   // Draw demo at the current song position.
+  drawAxes();
   drawDemo(song.position());
 }
 
