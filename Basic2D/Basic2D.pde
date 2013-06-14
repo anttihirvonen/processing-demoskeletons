@@ -28,7 +28,7 @@ Minim minim;
 AudioPlayer song;
 
 // Syncdata
-int[] exampleSync = {};
+int[] exampleSync = {2229, 3227, 4202, 5201, 6199, 7151, 8219, 9195, 10216, 11192, 12213, 13188, 14187, 15209};
 
 /*
  * Sets up audio playing: call this last in setup()
@@ -59,30 +59,21 @@ void setup() {
  * Your drawing code ends up in here!
  */
 void drawDemo(int time) {
-  rect(-1, -0.8, 2, 1.6);
-  // "drum intensity" value, 0->1
-  /*float drum = 0;
-  for (int i = 0; i < exampleSync.length; i++) {
-    if (time > exampleSync[i] && time < exampleSync[i] + 200)
-      drum = (time-exampleSync[i])/200.;
-  }
-  rectMode(CENTER);
+  float intensity = 0;
+  for (int i = 0; i < exampleSync.length; i++)
+    if (time > exampleSync[i] - 20 && time < exampleSync[i] + 300)
+      intensity = 1.0;
   
-  for (int i = 0; i < 200; i++) {
-    pushMatrix();
-    fill(drum*127, 0, i/200.0*255);
-    rotate(time*0.005+i/200.);
-    
-    rect(0, 0, 1+drum*0.2, 1+drum*0.2);
-    popMatrix();
-  }*/
-  if (time < 2550) {
-    //ellipse(0, 0, 0.1);
+  // Drawing a flickerin rect field as an example
+  for (float i = 0; i < 2*ASPECT_RATIO + 0.5; i += 0.1) {
+    // Vary color based on intensity value
+    fill(127 + 127*intensity, i*127, time/20.);
+    rect(-ASPECT_RATIO+i, -0.8, 0.1, 1.6);
   }
 }
 
 /*
- * Draws coordinate axes in the drawing space.
+ * Draws coordinate axes (for reference).
  */
 void drawAxes() {
   // Drawing options
@@ -107,18 +98,21 @@ void drawAxes() {
 }
 
 void draw() {
+  // Reset all transformations.
   resetMatrix();
+  
   // The following line maps coordinates from our drawing space to 
   // processing screen space. By default, axes go from -width/2...width/2 
   // and -height/2...height/2. That's not very nice if you wan't to change 
   // resolution :)
   // 
+  // THE IMPORTANT PART:
   // The coordinate space we draw in goes from -aspect_ratio...aspect_ratio
   // on x-axis and always -1...1 on y-axis, NEGATIVE Y ON BOTTOM. So
-  // just like the coordinate system used normally.
-  scale(1/ASPECT_RATIO*(CANVAS_WIDTH/2.0), -CANVAS_HEIGHT/2.0);
+  // just like the coordinate you're probably used to.
+  scale(CANVAS_WIDTH/2.0/ASPECT_RATIO, -CANVAS_HEIGHT/2.0);
   // Clear the screen after previous frame.
-  // If you remove this, you always draw on the last frame,
+  // If you comment this, you always draw on top the last frame,
   // which can lead to something interesting.
   clear();
   
